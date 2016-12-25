@@ -1,2 +1,2 @@
-# twostage
-Two Stage Submodular Maximization in Spark
+# TwoStage
+Two Stage Submodular Maximization
