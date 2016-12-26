@@ -1,0 +1,7 @@
+.DS_Store
+movielens/.ipynb_checkpoints/
+movielens/novel.pyc
+imageproc/VOC2012/ImageSets
+imageproc/VOC2012/JPEGImages
+imageproc/VOC2012/SegmentationClass
+imageproc/VOC2012/SegmentationObject
