@@ -1,5 +1,12 @@
 """
 	A wrapper for Amin's algorithm in order to be able to use mapPartitions
+
+	n - number of movies
+	m - number of categories
+	l - size of S
+	k - size of S_i
+	allSim - the similarity matrix for all 100k+ movies
+	allMovies - a dict() of type 'category' -> 'list of movies in said category'
 """
 
 import numpy as np
@@ -79,10 +86,10 @@ def wrapper(n, m, l, k, allSim, allMovies):
 				oldCost = bestCost
 
 
-		totalCost = 0
-		for i in range(m):
-			totalCost = totalCost + computeRealCost(i, bestS[i])
-		print totalCost
+		# totalCost = 0
+		# for i in range(m):
+		# 	totalCost = totalCost + computeRealCost(i, bestS[i])
+		# print 'Our solution gives totalCost = ', totalCost
 
 		return S
 
