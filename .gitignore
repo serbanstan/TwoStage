@@ -1,4 +1,5 @@
 .DS_Store
+imageproc/.ipynb_checkpoints/
 movielens/.ipynb_checkpoints/
 movielens/novel.pyc
 imageproc/VOC2012/ImageSets
