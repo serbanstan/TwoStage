@@ -12,6 +12,10 @@ def greedy(l, k, featvec, catimg):
 	def worker():
 		S = getClusters()
 
+		print "Our cluster set has ", len(S), " elements"
+		print "They are ", S
+		print ""
+
 		# now, to compute the cost of S, we'll greedily maximize our submodular functions based on our cluster set S
 		bestS = dict(zip([c for c in categories], [[] for c in categories]))
 
