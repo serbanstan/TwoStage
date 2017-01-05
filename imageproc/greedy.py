@@ -61,7 +61,7 @@ def greedy(l, k, featvec, catimg):
 		ax.set_xlabel('element index')
 		ax.set_ylabel('objective value')
 
-		ax.axis([0, k+1, 0, 300])
+		ax.axis([0, k+1, 0, 30])
 
 		plt.plot([(i+1) for i in range(k)], history, 'ro')
 
@@ -130,23 +130,40 @@ def greedy(l, k, featvec, catimg):
 
 		return list(set(S))
 
-
-	# write a function that computes the value of f for each category
 	def computeCost(cat, S):
-		tot = 0
-
+		# we initialize with e0 = 0
+		t1 = 0
 		for img in catimg[cat]:
-			best = 0
+			t1 = t1 + np.linalg.norm(featvec[img])
+
+		t2 = 0
+		for img in catimg[cat]:
+			# the value for e0
+			best = np.linalg.norm(featvec[img])
 
 			for s in S:
-				best = max(best, computeSim(featvec[img], featvec[s]))
-				# best = max(best, 1 / (np.linalg.norm(featvec[img] - featvec[s]) + 1))
+				best = min(best, np.linalg.norm(featvec[img] - featvec[s]))
 
-			tot = tot + best
+			t2 = t2 + best
 
-		return tot
+		return (t1 - t2) / len(catimg[cat])
 
-	def computeSim(a, b):
-		return 1.0 / (np.linalg.norm(a - b) + 1)
+	# write a function that computes the value of f for each category
+	# def computeCost(cat, S):
+	# 	tot = 0
+
+	# 	for img in catimg[cat]:
+	# 		best = 0
+
+	# 		for s in S:
+	# 			best = max(best, computeSim(featvec[img], featvec[s]))
+	# 			# best = max(best, 1 / (np.linalg.norm(featvec[img] - featvec[s]) + 1))
+
+	# 		tot = tot + best
+
+	# 	return tot
+
+	# def computeSim(a, b):
+	# 	return 1.0 / (np.linalg.norm(a - b) + 1)
 
 	return worker()
