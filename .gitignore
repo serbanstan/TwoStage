@@ -1,4 +1,5 @@
 .DS_Store
+*/.ipynb_checkpoints/
 imageproc/.ipynb_checkpoints/
 movielens/.ipynb_checkpoints/
 movielens/novel.pyc
