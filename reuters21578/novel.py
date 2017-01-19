@@ -22,7 +22,7 @@ def novel(n, m, l, k, X, articles):
 		S, picked, history = preK()
 
 		# the best S sets for each category
-		bestS = [S for i in range(m)]
+		bestS = [S[:] for i in range(m)]
 
 		oldCost = 0
 		for i in range(m):

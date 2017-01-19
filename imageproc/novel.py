@@ -24,7 +24,7 @@ def novel(l, k, featvec, catimg):
 		S, picked, history = preK(imgList)
 
 		# the best S sets for each category
-		bestS = dict(zip([c for c in categories], [S for c in categories]))
+		bestS = dict(zip([c for c in categories], [S[:] for c in categories]))
 
 		oldCost = 0
 		for c in categories:

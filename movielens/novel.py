@@ -5,8 +5,8 @@
 	m - number of categories
 	l - size of S
 	k - size of S_i
-	allSim - the similarity matrix for all 100k+ movies
-	allMovies - a dict() of type 'category' -> 'list of movies in said category'
+	sim - the similarity matrix for all 100k+ movies
+	movies - a dict() of type 'category' -> 'list of movies in said category'
 """
 
 import numpy as np
@@ -15,15 +15,14 @@ def wrapper(n, m, l, k, sim, movies):
 
 	# return the set of l elements that maximizes the greedy approach
 	def novel(partition):
-
-		# retrieve the elements from this partition - speed improvement
-		local = [i for i in partition]
+		global numEvals
+		numEvals = 0
 
 		# work forthe first k entries
-		S, picked = preK(local)
+		S, picked = preK(partition)
 
 		# the best S sets for each category
-		bestS = [S for i in range(m)]
+		bestS = [S[:] for i in range(m)]
 
 		oldCost = 0
 		for i in range(m):
@@ -34,7 +33,7 @@ def wrapper(n, m, l, k, sim, movies):
 			bestInd = -1
 			bestSwp = [-1 for i in range(m)]
 
-			for movInd in range(len(local)):
+			for movInd in range(n):
 				if picked[movInd] == False:
 
 					newCost = 0
@@ -50,7 +49,7 @@ def wrapper(n, m, l, k, sim, movies):
 						for j in range(k):
 							aux = bestS[i][j]
 
-							bestS[i][j] = local[movInd]
+							bestS[i][j] = partition[movInd]
 
 							val = computeCost(i, bestS[i])
 							if val > catNew:
@@ -69,7 +68,7 @@ def wrapper(n, m, l, k, sim, movies):
 			# time to add in the best element we found
 
 			if bestCost >= 0:	# make sure we have enough elements in the partition
-				S.append(local[bestInd])
+				S.append(partition[bestInd])
 				picked[bestInd] = True
 				for i in range(m):
 					if bestSwp[i] != -1:
@@ -82,22 +81,22 @@ def wrapper(n, m, l, k, sim, movies):
 			totalCost = totalCost + computeCost(i, bestS[i])
 		print 'Our solution gives totalCost = ', totalCost
 
-		return S
+		return S, totalCost, numEvals, bestS
 
 	# before hitting k elements, each element will just have to maximize the marginal gain
-	def preK(local):
+	def preK(partition):
 		S = []
 
-		picked = [False for i in range(len(local))]
+		picked = [False for i in range(len(partition))]
 
 		for times in range(k):
 			bestCost = -1
 			bestInd = -1
 
-			for movInd in range(len(local)):
+			for movInd in range(len(partition)):
 				if picked[movInd] == False:
 
-					mov = local[movInd]
+					mov = partition[movInd]
 					S.append(mov)
 
 					curCost = 0
@@ -114,7 +113,7 @@ def wrapper(n, m, l, k, sim, movies):
 
 			# make sure we have enough elements in the partition
 			if bestCost >= 0:
-				S.append(local[bestInd])
+				S.append(partition[bestInd])
 				picked[bestInd] = True
 
 			# print bestCost
@@ -123,9 +122,12 @@ def wrapper(n, m, l, k, sim, movies):
 
 
 	# write a function that computes the value of f for each category
-	# this is FacilityLocaltion from - Learning mixtures of submodular functions for image collection summarization.
+	# this is Facilitypartitiontion from - Learning mixtures of submodular functions for image collection summarization.
 	def computeCost(catIndex, S):
 		tot = 0
+
+		global numEvals
+		numEvals = numEvals + 1
 
 		for mov in movies[catIndex]:
 			mostSim = 0

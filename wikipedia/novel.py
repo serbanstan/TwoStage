@@ -25,7 +25,7 @@ def novel(l, k, children, elements, dictParents):
 		# return S
 
 		# the best S sets for each category
-		bestS = [S for i in range(m)]
+		bestS = [S[:] for i in range(m)]
 
 		oldCost = 0
 		for i in range(m):
