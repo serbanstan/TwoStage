@@ -673,8 +673,8 @@ d22['35857112'] = ['233488','35887507','213214','65309','442137','33737411','209
 
 
 dictParents = [d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14, d15, d16, d17, d18, d19, d20, d21, d22]
-l = 15
-k = 3
+l = 7
+k = 5
 from novel import novel
 
 novel(l, k, children, elements, dictParents)

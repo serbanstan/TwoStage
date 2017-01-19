@@ -51,7 +51,6 @@ def novel(l, k, children, elements, dictParents):
 						# iterate through all k positions and rememeber the best swap
 						for j in range(k):
 							aux = bestS[i][j]
-
 							bestS[i][j] = elements[ind]
 
 							val = computeCost(i, bestS[i])
@@ -66,16 +65,15 @@ def novel(l, k, children, elements, dictParents):
 					if newCost > bestCost:
 						bestCost = newCost
 						bestInd = ind
-						bestSWP = [el for el in swp]
+						bestSwp = swp[:]
 
 			# time to add in the best element we found
-
 			if bestCost >= 0:	# make sure we have enough elements in the partition
 				S.append(elements[bestInd])
 				picked[bestInd] = True
 				for i in range(m):
 					if bestSwp[i] != -1:
-						bestS[i][bestSwp[i]] = ind
+						bestS[i][bestSwp[i]] = elements[bestInd]
 				oldCost = bestCost
 
 			# again for plotting purposes
@@ -83,7 +81,6 @@ def novel(l, k, children, elements, dictParents):
 			for i in range(m):
 				curSum = curSum + computeCost(i, bestS[i])
 			history.append(curSum)
-
 
 		# a plot with the value for all l elements
 		fig = plt.figure()
@@ -110,8 +107,12 @@ def novel(l, k, children, elements, dictParents):
 
 		curSum = 0
 		for i in range(m):
-			curSum = curSum + computeCost(i, S)
+			curSum = curSum + computeCost(i, bestS[i])
 		print 'We obtained value ', curSum
+
+		print S, curSum
+		for i in range(m):
+			print bestS[i], set(bestS[i]).issubset(set(S)), computeCost(i, bestS[i])
 
 		return S
 

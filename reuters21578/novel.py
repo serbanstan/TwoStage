@@ -63,7 +63,7 @@ def novel(n, m, l, k, X, articles):
 					if newCost > bestCost:
 						bestCost = newCost
 						bestInd = articleInd
-						bestSWP = [el for el in swp]
+						bestSwp = swp[:]
 
 			# time to add in the best element we found
 
@@ -72,7 +72,7 @@ def novel(n, m, l, k, X, articles):
 				picked[bestInd] = True
 				for i in range(m):
 					if bestSwp[i] != -1:
-						bestS[i][bestSwp[i]] = ind
+						bestS[i][bestSwp[i]] = bestInd
 				oldCost = bestCost
 
 			# again for plotting purposes
@@ -105,10 +105,7 @@ def novel(n, m, l, k, X, articles):
 		plt.savefig('plotl.png')
 		Image.open('plotl.png').save('plotl.jpg','JPEG')
 
-
-
-
-		return S
+		return S, bestS, history[-1]
 
 	# before hitting k elements, each element will just have to maximize the marginal gain
 	def preK():

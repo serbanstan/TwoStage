@@ -65,7 +65,7 @@ def novel(l, k, featvec, catimg):
 					if newCost > bestCost:
 						bestCost = newCost
 						bestInd = imgInd
-						bestSWP = [el for el in swp]
+						bestSwp = swp.copy()
 
 			# time to add in the best element we found
 
@@ -74,7 +74,7 @@ def novel(l, k, featvec, catimg):
 				picked[bestInd] = True
 				for c in categories:
 					if bestSwp[c] != -1:
-						bestS[c][bestSwp[c]] = ind
+						bestS[c][bestSwp[c]] = imgList[bestInd]
 				oldCost = bestCost
 
 			# again for plotting purposes
@@ -105,7 +105,7 @@ def novel(l, k, featvec, catimg):
 		plt.savefig('plotl.png')
 		Image.open('plotl.png').save('plotl.jpg','JPEG')
 
-		return S
+		return S, bestS, history[-1]
 
 	# before hitting k elements, each element will just have to maximize the marginal gain
 	def preK(imgList):

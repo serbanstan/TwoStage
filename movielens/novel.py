@@ -63,7 +63,7 @@ def wrapper(n, m, l, k, sim, movies):
 					if newCost > bestCost:
 						bestCost = newCost
 						bestInd = movInd
-						bestSWP = [el for el in swp]
+						bestSwp = swp[:]
 
 			# time to add in the best element we found
 
@@ -72,7 +72,7 @@ def wrapper(n, m, l, k, sim, movies):
 				picked[bestInd] = True
 				for i in range(m):
 					if bestSwp[i] != -1:
-						bestS[i][bestSwp[i]] = ind
+						bestS[i][bestSwp[i]] = partition[bestInd]
 				oldCost = bestCost
 
 
