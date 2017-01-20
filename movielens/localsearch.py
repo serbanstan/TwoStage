@@ -34,8 +34,6 @@ def lsWrapper(n, m, l, k, epsilon, sim, movies):
 		while not done:
 			done = True
 
-			print "Working for step ", steps
-
 			for i in range(n):
 				if picked[i] is True:
 
@@ -56,7 +54,7 @@ def lsWrapper(n, m, l, k, epsilon, sim, movies):
 								S.remove(partition[i])
 								S.append(partition[j])
 
-								print "Replaced index ", i, " with index ", j, " => ", S
+								# print "Replaced index ", i, " with index ", j, " => ", S
 
 								done = False
 								break
@@ -67,9 +65,7 @@ def lsWrapper(n, m, l, k, epsilon, sim, movies):
 			intermCost = 0
 			for i in range(m):
 				intermCost = intermCost + greedy(i, S)
-			print 'Intermediate cost = ', intermCost
-
-			print ""
+			print 'Intermediate cost at step ', steps, ' = ', intermCost
 
 			steps = steps + 1
 			if steps > 100:

@@ -81,7 +81,8 @@ def wrapper(n, m, l, k, sim, movies):
 			totalCost = totalCost + computeCost(i, bestS[i])
 		print 'Our solution gives totalCost = ', totalCost
 
-		return S, totalCost, numEvals, bestS
+		return S, totalCost, numEvals
+#		return S, totalCost, numEvals, bestS
 
 	# before hitting k elements, each element will just have to maximize the marginal gain
 	def preK(partition):
