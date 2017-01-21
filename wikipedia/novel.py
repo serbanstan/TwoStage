@@ -17,9 +17,12 @@ def novel(l, k, children, elements, dictParents):
 
 	# return the set of l elements that maximizes the greedy approach
 	def worker():
+		global numEvals
+		numEvals = 0
+
 		S, picked, history = preK()
 
-		print 'Solution set after the first k rounds ', S
+		# print 'Solution set after the first k rounds ', S
 		# print computeCost(0, S), computeCost(1, S), computeCost(2, S), computeCost(3, S), computeCost(4, S)
 
 		# return S
@@ -83,26 +86,26 @@ def novel(l, k, children, elements, dictParents):
 			history.append(curSum)
 
 		# a plot with the value for all l elements
-		fig = plt.figure()
-		fig.suptitle('Objective function for l steps', fontsize=14, fontweight='bold')
+		# fig = plt.figure()
+		# fig.suptitle('Objective function for l steps', fontsize=14, fontweight='bold')
 
-		ax = fig.add_subplot(111)
-		ax.set_xlabel('element index')
-		ax.set_ylabel('objective value')
+		# ax = fig.add_subplot(111)
+		# ax.set_xlabel('element index')
+		# ax.set_ylabel('objective value')
 
-		ax.axis([0, l, 0, 500])
+		# ax.axis([0, l, 0, 500])
 
-		plt.plot([i+1 for i in range(l)], history, 'ro')
-		plt.plot([i+1 for i in range(k)], history[:k], 'yo')
+		# plt.plot([i+1 for i in range(l)], history, 'ro')
+		# plt.plot([i+1 for i in range(k)], history[:k], 'yo')
 
-		newhist = [0]
-		newhist.extend(history)
-		plt.plot([i for i in range(l + 1)], newhist, 'b')
+		# newhist = [0]
+		# newhist.extend(history)
+		# plt.plot([i for i in range(l + 1)], newhist, 'b')
 
-		plt.savefig('plotl.png')
-		Image.open('plotl.png').save('plotl.jpg','JPEG')
+		# plt.savefig('plotl.png')
+		# Image.open('plotl.png').save('plotl.jpg','JPEG')
 
-		print 'Our solution set ', S
+		# print 'Our solution set ', S
 		# print computeCost(0, bestS[0]), computeCost(1, bestS[1]), computeCost(2, bestS[2]), computeCost(3, bestS[3]), computeCost(4, bestS[4])
 
 		curSum = 0
@@ -110,11 +113,11 @@ def novel(l, k, children, elements, dictParents):
 			curSum = curSum + computeCost(i, bestS[i])
 		print 'We obtained value ', curSum
 
-		print S, curSum
-		for i in range(m):
-			print bestS[i], set(bestS[i]).issubset(set(S)), computeCost(i, bestS[i])
+		# print S, curSum
+		# for i in range(m):
+		# 	print bestS[i], set(bestS[i]).issubset(set(S)), computeCost(i, bestS[i])
 
-		return S
+		return S, bestS, curSum, numEvals
 
 	# before hitting k elements, each element will just have to maximize the marginal gain
 	def preK():
@@ -155,23 +158,23 @@ def novel(l, k, children, elements, dictParents):
 			history.append(curSum)
 
 		# plotting the value of the function 
-		fig = plt.figure()
-		fig.suptitle('Objective function for first k steps', fontsize=14, fontweight='bold')
+		# fig = plt.figure()
+		# fig.suptitle('Objective function for first k steps', fontsize=14, fontweight='bold')
 
-		ax = fig.add_subplot(111)
-		ax.set_xlabel('element index')
-		ax.set_ylabel('objective value')
+		# ax = fig.add_subplot(111)
+		# ax.set_xlabel('element index')
+		# ax.set_ylabel('objective value')
 
-		ax.axis([0, k+1, 0, 500])
+		# ax.axis([0, k+1, 0, 500])
 
-		plt.plot([(i+1) for i in range(k)], history, 'ro')
+		# plt.plot([(i+1) for i in range(k)], history, 'ro')
 
-		newhist = [0]
-		newhist.extend(history)
-		plt.plot([i for i in range(k+1)], newhist, 'b')
+		# newhist = [0]
+		# newhist.extend(history)
+		# plt.plot([i for i in range(k+1)], newhist, 'b')
 
-		plt.savefig('plotk.png')
-		Image.open('plotk.png').save('plotk.jpg','JPEG')
+		# plt.savefig('plotk.png')
+		# Image.open('plotk.png').save('plotk.jpg','JPEG')
 
 		return S, picked, history
 
@@ -180,12 +183,23 @@ def novel(l, k, children, elements, dictParents):
 	def computeCost(catIndex, S):
 		tot = 0
 
-		# check how many children are activated by S
-		for cover in dictParents[catIndex].values():
-			for c in cover:
-				if c in S:
-					tot = tot + 1
+		global numEvals
+		numEvals = numEvals + 1
+
+		for child in children[catIndex]:
+			parents = dictParents[catIndex][child]
+			# intersection
+			for parent in parents:
+				if parent in S:
+					tot += 1
 					break
+
+		# # check how many children are activated by S
+		# for cover in dictParents[catIndex].values():
+		# 	for c in cover:
+		# 		if c in S:
+		# 			tot = tot + 1
+		# 			break
 
 		return tot
 

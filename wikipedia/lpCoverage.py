@@ -172,7 +172,9 @@ def solveLP(l,k, children, elements, dictParents,loweredL, loweredK):
     print "concave Objective Value: " + str(- fullSolution['primal objective']) 
     print "relaxedValue: " + str(relaxedValue)
     print "value: " + str(value)
-    return fullSolution
+
+    return -fullSolution['primal objective'], relaxedValue, value
+    #return fullSolution
 
 
 ############################
@@ -282,11 +284,13 @@ def solveOneLP(k, children, elements, dictParent):
     A = matrix(A)
     b = matrix(b)
     c = matrix(objective)
+
+    solvers.options['show_progress'] = False
     
     fullSolution = solvers.lp(c,A,b)
     sol = fullSolution['x']
 
-    print "concave Objective Value: " + str(- fullSolution['primal objective']) 
+    # print "concave Objective Value: " + str(- fullSolution['primal objective']) 
     return - fullSolution['primal objective']
 
 
