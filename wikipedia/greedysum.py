@@ -82,10 +82,12 @@ def greedysum(l, k, children, elements, dictParents):
 		numEvals = numEvals + 1
 
 		# check how many children are activated by S
-		for cover in dictParents[catIndex].values():
-			for c in cover:
-				if c in S:
-					tot = tot + 1
+		for child in children[catIndex]:
+			parents = dictParents[catIndex][child]
+			# intersection
+			for parent in parents:
+				if parent in S:
+					tot += 1
 					break
 
 		return tot

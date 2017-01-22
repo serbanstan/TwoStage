@@ -1,20 +1,19 @@
 """
-	A wrapper for Greedy Sum in the movielens setting.
-
-	n - number of movies
-	m - number of categories
-	l - size of S
-	k - size of S_i
-	sim - the similarity matrix for all 100k+ movies
-	movies - a dict() of type 'category' -> 'list of movies in said category'
+	A wrapper for Greedy Sum
 """
 
 import numpy as np
 
-def gsWrapper(n, m, l, k, simDist, movies):
+def greedysum(l, k, featvec, nrm, nrmdist, catimg):
+
+	categories = catimg.keys()
+	imgList = featvec.keys()
+
+	n = len(imgList)
+	m = len(categories)
 
 	# return the set of l elements that maximizes the greedy approach
-	def gs(partition):
+	def worker():
 		global numEvals
 		numEvals = 0
 
@@ -27,11 +26,11 @@ def gsWrapper(n, m, l, k, simDist, movies):
 			bestCost = -1
 
 			for ind in range(n):
-				S.append(partition[ind])
+				S.append(imgList[ind])
 
 				curCost = 0
-				for i in range(m):
-					curCost = curCost + computeCost(i, S)
+				for c in categories:
+					curCost = curCost + computeCost(c, S)
 
 				if curCost > bestCost:
 					bestCost = curCost
@@ -39,18 +38,18 @@ def gsWrapper(n, m, l, k, simDist, movies):
 
 				S.pop()
 
-			S.append(partition[bestInd])
+			S.append(imgList[bestInd])
 			picked[bestInd] = True
 
 		totalCost = 0
-		for i in range(m):
-			totalCost = totalCost + greedy(i, S)
+		for c in categories:
+			totalCost = totalCost + greedy(c, S)
 		print 'Greedy Sum gives cost = ', totalCost
 
 		return S, totalCost, numEvals
 
 	# compute the greedy maximization solution for S for the second stage submodular maximization
-	def greedy(catIndex, S):
+	def greedy(c, S):
 		greedyS = []
 
 		use = [False for s in S]
@@ -65,7 +64,7 @@ def gsWrapper(n, m, l, k, simDist, movies):
 				if use[ind] == False:
 					greedyS.append(S[ind])
 
-					curCost = computeCost(catIndex, greedyS)
+					curCost = computeCost(c, greedyS)
 					if curCost > bestCost:
 						bestCost = curCost
 						bestInd = ind
@@ -75,27 +74,30 @@ def gsWrapper(n, m, l, k, simDist, movies):
 			greedyS.append(S[bestInd])
 			use[bestInd] = True
 
-		return computeCost(catIndex, greedyS)
+		return computeCost(c, greedyS)
 
 
 	# write a function that computes the value of f for each category
-	# this is Facilitypartitiontion from - Learning mixtures of submodular functions for image collection summarization.
-	def computeCost(catIndex, S):
-		tot = 0
-
+	def computeCost(cat, S):
 		global numEvals
 		numEvals = numEvals + 1
+		
+		# we initialize with e0 = 0
+		t1 = 0
+		for img in catimg[cat]:
+			t1 = t1 + nrm[img]
 
-		for mov in movies[catIndex]:
-			mostSim = 0
+		t2 = 0
+		for img in catimg[cat]:
+			# the value for e0
+			best = nrm[img]
 
 			for s in S:
-				mostSim = max(mostSim, simDist[(mov, s)])
-				# mostSim = max(mostSim, np.dot(sim[mov], sim[s]))
+				best = min(best, nrmdist[(img, s)])
 
-			tot = tot + mostSim
+			t2 = t2 + best
 
-		return tot
+		return (t1 - t2) / len(catimg[cat])
 
-	return gs
+	return worker()
 

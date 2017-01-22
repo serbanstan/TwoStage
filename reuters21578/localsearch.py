@@ -1,31 +1,24 @@
 """
-	A wrapper for Local Search in the movielens setting.
-
-	n - number of movies
-	m - number of categories
-	l - size of S
-	k - size of S_i
-	sim - the similarity matrix for all 100k+ movies
-	movies - a dict() of type 'category' -> 'list of movies in said category'
+Local Search
 """
 
 import numpy as np
 
-def lsWrapper(n, m, l, k, epsilon, simDist, movies):
+def localsearch(n, m, l, k, csim, articles, epsilon = 0.2):
 
 	# return the set of l elements that maximizes the greedy approach
-	def ls(partition):
+	def worker():
 		global numEvals
 		numEvals = 0
 
 		np.random.seed(3)
 
 		# work forthe first k entries
-		S, picked = initS(partition)
+		S, picked = initS()
 
 		initialCost = 0
-		for i in range(m):
-			initialCost = initialCost + greedy(i, S)
+		for c in range(m):
+			initialCost = initialCost + greedy(c, S)
 		print 'Local search value after initialization = ', initialCost
 
 		steps = 0
@@ -37,22 +30,22 @@ def lsWrapper(n, m, l, k, epsilon, simDist, movies):
 			for i in range(n):
 				if picked[i] is True:
 
-					# need to compute the set without partition[i]
+					# need to compute the set without i
 					noI = S[:]
-					noI.remove(partition[i])
+					noI.remove(i)
 
-					margGainnoI = margGain(noI, partition[i])
+					margGainnoI = margGain(noI, i)
 
 					for j in range(n):
 						if picked[j] is False:
 							# see if swapping out i for j gives a better solution
 
-							if (1 - epsilon) * margGain(S, partition[j]) > margGainnoI:
+							if (1 - epsilon) * margGain(S, j) > margGainnoI:
 								picked[i] = False
 								picked[j] = True
 
-								S.remove(partition[i])
-								S.append(partition[j])
+								S.remove(i)
+								S.append(j)
 
 								# print "Replaced index ", i, " with index ", j, " => ", S
 
@@ -63,8 +56,8 @@ def lsWrapper(n, m, l, k, epsilon, simDist, movies):
 					break
 
 			intermCost = 0
-			for i in range(m):
-				intermCost = intermCost + greedy(i, S)
+			for c in range(m):
+				intermCost = intermCost + greedy(c, S)
 			print 'Intermediate cost at step ', steps, ' = ', intermCost
 
 			steps = steps + 1
@@ -73,27 +66,27 @@ def lsWrapper(n, m, l, k, epsilon, simDist, movies):
 				break
 
 		totalCost = 0
-		for i in range(m):
-			totalCost = totalCost + greedy(i, S)
+		for c in range(m):
+			totalCost = totalCost + greedy(c, S)
 		print 'Local Search gives cost = ', totalCost
 
 		return S, totalCost, numEvals
 
 	def margGain(S, elem):
 		curCost = 0
-		for i in range(m):
-			curCost = curCost + greedy(i, S)
+		for c in range(m):
+			curCost = curCost + greedy(c, S)
 
 		newS = S[:]
 		newS.append(elem)
 		newCost = 0
-		for i in range(m):
-			newCost = newCost + greedy(i, newS)
+		for c in range(m):
+			newCost = newCost + greedy(c, newS)
 
 		return max(newCost - curCost, 0)
 
 	# compute the greedy maximization solution for S for the second stage submodular maximization
-	def greedy(catIndex, S):
+	def greedy(cat, S):
 		greedyS = []
 
 		use = [False for s in S]
@@ -108,7 +101,7 @@ def lsWrapper(n, m, l, k, epsilon, simDist, movies):
 				if use[ind] == False:
 					greedyS.append(S[ind])
 
-					curCost = computeCost(catIndex, greedyS)
+					curCost = computeCost(cat, greedyS)
 					if curCost > bestCost:
 						bestCost = curCost
 						bestInd = ind
@@ -118,10 +111,10 @@ def lsWrapper(n, m, l, k, epsilon, simDist, movies):
 			greedyS.append(S[bestInd])
 			use[bestInd] = True
 
-		return computeCost(catIndex, greedyS)
+		return computeCost(cat, greedyS)
 
 	# initialize by picking l elements, such that each new element maximizes the marginal gain
-	def initS(partition):
+	def initS():
 		S = []
 
 		picked = [False for i in range(n)]
@@ -134,7 +127,7 @@ def lsWrapper(n, m, l, k, epsilon, simDist, movies):
 			for ind in range(n):
 				cost = 0
 
-				S.append(partition[ind])
+				S.append(ind)
 
 				for cat in range(m):
 					cost = cost + greedy(cat, S)
@@ -145,72 +138,28 @@ def lsWrapper(n, m, l, k, epsilon, simDist, movies):
 					bestCost = cost
 					bestInd = ind
 
-			S.append(partition[bestInd])
+			S.append(bestInd)
 			picked[bestInd] = True
 
 		return S, picked
 
 
-	# initialize with singleton that has largest contribution plus (l-1) random elements
-	# def initS(partition):
-	# 	S = []
-
-	# 	picked = [False for i in range(n)]
-
-	# 	bestCost = -1
-	# 	bestInd = -1
-
-	# 	for movInd in range(n):
-	# 		mov = partition[movInd]
-
-	# 		S.append(mov)
-
-	# 		curCost = 0
-	# 		for i in range(m):
-	# 			curCost = curCost + computeCost(i, S)
-
-	# 		if curCost > bestCost:
-	# 			bestCost = curCost
-	# 			bestInd = movInd
-
-	# 		S.pop()
-
-	# 	S.append(partition[bestInd])
-	# 	picked[bestInd] = True
-
-	# 	# now, fill up the rest of S with (l-1) random elements
-	# 	while True:
-	# 		randChoice = np.random.choice(n, l-1)
-
-	# 		if bestInd in randChoice:
-	# 			continue
-	# 		else:
-	# 			for c in randChoice:
-	# 				S.append(partition[c])
-	# 				picked[c] = True
-	# 			break
-
-	# 	return S, picked
-
-
 	# write a function that computes the value of f for each category
-	# this is Facilitypartitiontion from - Learning mixtures of submodular functions for image collection summarization.
 	def computeCost(catIndex, S):
-		tot = 0
-
 		global numEvals
 		numEvals = numEvals + 1
 
-		for mov in movies[catIndex]:
+		tot = 0
+
+		for articleInd in articles[catIndex]:
 			mostSim = 0
 
 			for s in S:
-				mostSim = max(mostSim, simDist[(mov, s)])
-				# mostSim = max(mostSim, np.dot(sim[mov], sim[s]))
+				mostSim = max(mostSim, csim[articleInd][s])
 
 			tot = tot + mostSim
 
 		return tot
 
-	return ls
+	return worker()
 

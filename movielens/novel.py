@@ -11,7 +11,7 @@
 
 import numpy as np
 
-def wrapper(n, m, l, k, sim, movies):
+def wrapper(n, m, l, k, simDist, movies):
 
 	# return the set of l elements that maximizes the greedy approach
 	def novel(partition):
@@ -81,6 +81,11 @@ def wrapper(n, m, l, k, sim, movies):
 			totalCost = totalCost + computeCost(i, bestS[i])
 		print 'Our solution gives totalCost = ', totalCost
 
+		# sanity check
+		# print len(S)
+		# for i in range(m):
+		#     print set(bestS[i]).issubset(set(S)), len(bestS[i]) == k
+
 		return S, totalCost, numEvals
 #		return S, totalCost, numEvals, bestS
 
@@ -134,7 +139,8 @@ def wrapper(n, m, l, k, sim, movies):
 			mostSim = 0
 
 			for s in S:
-				mostSim = max(mostSim, np.dot(sim[mov], sim[s]))
+				mostSim = max(mostSim, simDist[(mov, s)])
+				# mostSim = max(mostSim, np.dot(sim[mov], sim[s]))
 
 			tot = tot + mostSim
 

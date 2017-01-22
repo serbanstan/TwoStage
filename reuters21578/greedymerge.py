@@ -1,20 +1,14 @@
 """
-	A wrapper for Greedy Merge in the movielens setting.
-
-	n - number of movies
-	m - number of categories
-	l - size of S
-	k - size of S_i
-	sim - the similarity matrix for all 100k+ movies
-	movies - a dict() of type 'category' -> 'list of movies in said category'
+	Greedy Merge. 
 """
 
 import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
-def gmWrapper(n, m, l, k, simDist, movies):
+def greedymerge(n, m, l, k, csim, articles):
 
 	# return the set of l elements that maximizes the greedy approach
-	def gm(partition):
+	def worker():
 		global numEvals
 		numEvals = 0
 
@@ -22,7 +16,7 @@ def gmWrapper(n, m, l, k, simDist, movies):
 		S = []
 
 		# greedily maximize each function ignoring the constraint on L
-		for catIndex in range(m):
+		for c in range(m):
 
 			greedyS = []
 			use = [False for i in range(n)]
@@ -34,19 +28,19 @@ def gmWrapper(n, m, l, k, simDist, movies):
 
 				for ind in range(n):
 					if use[ind] == False:
-						greedyS.append(partition[ind])
+						greedyS.append(ind)
 
-						curCost = computeCost(catIndex, greedyS)
+						curCost = computeCost(c, greedyS)
 						if curCost > bestCost:
 							bestCost = curCost
 							bestInd = ind
 
 						greedyS.pop()
 
-				greedyS.append(partition[bestInd])
+				greedyS.append(bestInd)
 				use[bestInd] = True
 
-			totalCost = totalCost + computeCost(catIndex, greedyS)
+			totalCost = totalCost + computeCost(c, greedyS)
 			S.extend(greedyS)
 
 		S = list(set(S))
@@ -56,24 +50,24 @@ def gmWrapper(n, m, l, k, simDist, movies):
 
 		return S, totalCost, numEvals
 
-	# write a function that computes the value of f for each category
-	# this is Facilitypartitiontion from - Learning mixtures of submodular functions for image collection summarization.
-	def computeCost(catIndex, S):
-		tot = 0
 
+	# write a function that computes the value of f for each category
+	# this is FacilityLocation from - Learning mixtures of submodular functions for image collection summarization.
+	def computeCost(catIndex, S):
 		global numEvals
 		numEvals = numEvals + 1
 
-		for mov in movies[catIndex]:
+		tot = 0
+
+		for articleInd in articles[catIndex]:
 			mostSim = 0
 
 			for s in S:
-				mostSim = max(mostSim, simDist[(mov, s)])
-				# mostSim = max(mostSim, np.dot(sim[mov], sim[s]))
+				mostSim = max(mostSim, csim[articleInd][s])
 
 			tot = tot + mostSim
 
 		return tot
 
-	return gm
+	return worker()
 

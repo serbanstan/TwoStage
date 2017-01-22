@@ -14,10 +14,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 from PIL import Image
 import matplotlib.pyplot as plt
 
-def novel(n, m, l, k, X, articles):
+def novel(n, m, l, k, csim, articles):
 
 	# return the set of l elements that maximizes the greedy approach
 	def worker():
+		global numEvals
+		numEvals = 0
+
 		# work forthe first k entries
 		S, picked, history = preK()
 
@@ -81,31 +84,29 @@ def novel(n, m, l, k, X, articles):
 				curSum = curSum + computeCost(i, bestS[i])
 			history.append(curSum)
 
-
-
 		print "We obtained objective value ", history[-1], " for set ", S
 
-		# a plot with the value for all l elements
-		fig = plt.figure()
-		fig.suptitle('Objective function for l steps', fontsize=14, fontweight='bold')
+		# # a plot with the value for all l elements
+		# fig = plt.figure()
+		# fig.suptitle('Objective function for l steps', fontsize=14, fontweight='bold')
 
-		ax = fig.add_subplot(111)
-		ax.set_xlabel('element index')
-		ax.set_ylabel('objective value')
+		# ax = fig.add_subplot(111)
+		# ax.set_xlabel('element index')
+		# ax.set_ylabel('objective value')
 
-		ax.axis([0, l, 0, 80])
+		# ax.axis([0, l, 0, 80])
 
-		plt.plot([i+1 for i in range(l)], history, 'ro')
-		plt.plot([i+1 for i in range(k)], history[:k], 'yo')
+		# plt.plot([i+1 for i in range(l)], history, 'ro')
+		# plt.plot([i+1 for i in range(k)], history[:k], 'yo')
 
-		newhist = [0]
-		newhist.extend(history)
-		plt.plot([i for i in range(l + 1)], newhist, 'b')
+		# newhist = [0]
+		# newhist.extend(history)
+		# plt.plot([i for i in range(l + 1)], newhist, 'b')
 
-		plt.savefig('plotl.png')
-		Image.open('plotl.png').save('plotl.jpg','JPEG')
+		# plt.savefig('plotl.png')
+		# Image.open('plotl.png').save('plotl.jpg','JPEG')
 
-		return S, bestS, history[-1]
+		return S, history[-1], numEvals
 
 	# before hitting k elements, each element will just have to maximize the marginal gain
 	def preK():
@@ -146,28 +147,26 @@ def novel(n, m, l, k, X, articles):
 
 			history.append(curSum)
 
-		print history
+		# print history
 
 		# plotting the value of the function 
-		fig = plt.figure()
-		fig.suptitle('Objective function for first k steps', fontsize=14, fontweight='bold')
+		# fig = plt.figure()
+		# fig.suptitle('Objective function for first k steps', fontsize=14, fontweight='bold')
 
-		ax = fig.add_subplot(111)
-		ax.set_xlabel('element index')
-		ax.set_ylabel('objective value')
+		# ax = fig.add_subplot(111)
+		# ax.set_xlabel('element index')
+		# ax.set_ylabel('objective value')
 
-		ax.axis([0, k+1, 0, 80])
+		# ax.axis([0, k+1, 0, 80])
 
-		plt.plot([(i+1) for i in range(k)], history, 'ro')
+		# plt.plot([(i+1) for i in range(k)], history, 'ro')
 
-		newhist = [0]
-		newhist.extend(history)
-		plt.plot([i for i in range(k+1)], newhist, 'b')
+		# newhist = [0]
+		# newhist.extend(history)
+		# plt.plot([i for i in range(k+1)], newhist, 'b')
 
-		plt.savefig('plotk.png')
-		Image.open('plotk.png').save('plotk.jpg','JPEG')
-
-
+		# plt.savefig('plotk.png')
+		# Image.open('plotk.png').save('plotk.jpg','JPEG')
 
 		return S, picked, history
 
@@ -175,17 +174,37 @@ def novel(n, m, l, k, X, articles):
 	# write a function that computes the value of f for each category
 	# this is Facilityelemstion from - Learning mixtures of submodular functions for image collection summarization.
 	def computeCost(catIndex, S):
+		global numEvals
+		numEvals = numEvals + 1
+
 		tot = 0
 
 		for articleInd in articles[catIndex]:
 			mostSim = 0
 
 			for s in S:
-				mostSim = max(mostSim, cosine_similarity(X[articleInd].reshape(1,-1), X[s].reshape(1,-1))[0][0])
+				mostSim = max(mostSim, csim[articleInd][s])
 
 			tot = tot + mostSim
 
 		return tot
+
+
+	# def computeCost(catIndex, S):
+	# 	global numEvals
+	# 	numEvals = numEvals + 1
+
+	# 	tot = 0
+
+	# 	for articleInd in articles[catIndex]:
+	# 		mostSim = 0
+
+	# 		for s in S:
+	# 			mostSim = max(mostSim, cosine_similarity(X[articleInd].reshape(1,-1), X[s].reshape(1,-1))[0][0])
+
+	# 		tot = tot + mostSim
+
+	# 	return tot
 
 	return worker()
 
