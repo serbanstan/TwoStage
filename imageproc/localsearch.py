@@ -120,34 +120,73 @@ def localsearch(l, k, featvec, nrm, nrmdist, catimg, epsilon):
 		return computeCost(cat, greedyS)
 
 	# initialize by picking l elements, such that each new element maximizes the marginal gain
+	# def initS():
+	# 	S = []
+
+	# 	picked = [False for i in range(n)]
+
+	# 	for times in range(l):
+
+	# 		bestCost = -1
+	# 		bestInd = -1
+
+	# 		for ind in range(n):
+	# 			cost = 0
+
+	# 			S.append(imgList[ind])
+
+	# 			for cat in categories:
+	# 				cost = cost + greedy(cat, S)
+
+	# 			S.pop()
+
+	# 			if cost > bestCost:
+	# 				bestCost = cost
+	# 				bestInd = ind
+
+	# 		S.append(imgList[bestInd])
+	# 		picked[bestInd] = True
+
+	# 	return S, picked
+
 	def initS():
 		S = []
 
 		picked = [False for i in range(n)]
 
-		for times in range(l):
+		bestCost = -1
+		bestInd = -1
 
-			bestCost = -1
-			bestInd = -1
+		for imgInd in range(n):
+			S.append(imgList[imgInd])
 
-			for ind in range(n):
-				cost = 0
+			curCost = 0
+			for cat in categories:
+				curCost = curCost + computeCost(cat, S)
 
-				S.append(imgList[ind])
+			if curCost > bestCost:
+				bestCost = curCost
+				bestInd = imgInd
 
-				for cat in categories:
-					cost = cost + greedy(cat, S)
+			S.pop()
 
-				S.pop()
+		S.append(imgList[bestInd])
+		picked[bestInd] = True
 
-				if cost > bestCost:
-					bestCost = cost
-					bestInd = ind
+		# now, fill up the rest of S with (l-1) random elements
+		while True:
+			randChoice = np.random.choice(n, l-1)
 
-			S.append(imgList[bestInd])
-			picked[bestInd] = True
+			if bestInd in randChoice:
+				continue
+			else:
+				for c in randChoice:
+					S.append(imgList[c])
+					picked[c] = True
+				break
 
 		return S, picked
+
 
 
 	# write a function that computes the value of f for each category

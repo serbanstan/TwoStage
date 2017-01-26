@@ -5,7 +5,7 @@
 	m - number of categories
 	l - size of S
 	k - size of S_i
-	sim - the similarity matrix for all 100k+ movies
+	simDist - a dictionary of distances between pairs of movies
 	movies - a dict() of type 'category' -> 'list of movies in said category'
 """
 
@@ -78,8 +78,23 @@ def wrapper(n, m, l, k, simDist, movies):
 
 		totalCost = 0
 		for i in range(m):
+			# print 'Cost for category ', i, ":", computeCost(i, bestS[i]), bestS[i]
 			totalCost = totalCost + computeCost(i, bestS[i])
 		print 'Our solution gives totalCost = ', totalCost
+
+
+		for catIndex in range(m):
+			newS = []
+
+			print 'Category ', catIndex
+
+			for i in range(k):
+				oldS = newS[:]
+				newS.append(bestS[catIndex][i])
+
+				print bestS[catIndex][i], " ", computeCost(catIndex, newS) - computeCost(catIndex, oldS)
+
+			print 'Total cost ', computeCost(catIndex, bestS[catIndex]), "\n"
 
 		# sanity check
 		# print len(S)
@@ -128,7 +143,7 @@ def wrapper(n, m, l, k, simDist, movies):
 
 
 	# write a function that computes the value of f for each category
-	# this is Facilitypartitiontion from - Learning mixtures of submodular functions for image collection summarization.
+	# this is Facility Location from - Learning mixtures of submodular functions for image collection summarization.
 	def computeCost(catIndex, S):
 		tot = 0
 

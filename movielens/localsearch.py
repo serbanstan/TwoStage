@@ -121,76 +121,76 @@ def lsWrapper(n, m, l, k, epsilon, simDist, movies):
 		return computeCost(catIndex, greedyS)
 
 	# initialize by picking l elements, such that each new element maximizes the marginal gain
-	def initS(partition):
-		S = []
-
-		picked = [False for i in range(n)]
-
-		for times in range(l):
-
-			bestCost = -1
-			bestInd = -1
-
-			for ind in range(n):
-				cost = 0
-
-				S.append(partition[ind])
-
-				for cat in range(m):
-					cost = cost + greedy(cat, S)
-
-				S.pop()
-
-				if cost > bestCost:
-					bestCost = cost
-					bestInd = ind
-
-			S.append(partition[bestInd])
-			picked[bestInd] = True
-
-		return S, picked
-
-
-	# initialize with singleton that has largest contribution plus (l-1) random elements
 	# def initS(partition):
 	# 	S = []
 
 	# 	picked = [False for i in range(n)]
 
-	# 	bestCost = -1
-	# 	bestInd = -1
+	# 	for times in range(l):
 
-	# 	for movInd in range(n):
-	# 		mov = partition[movInd]
+	# 		bestCost = -1
+	# 		bestInd = -1
 
-	# 		S.append(mov)
+	# 		for ind in range(n):
+	# 			cost = 0
 
-	# 		curCost = 0
-	# 		for i in range(m):
-	# 			curCost = curCost + computeCost(i, S)
+	# 			S.append(partition[ind])
 
-	# 		if curCost > bestCost:
-	# 			bestCost = curCost
-	# 			bestInd = movInd
+	# 			for cat in range(m):
+	# 				cost = cost + greedy(cat, S)
 
-	# 		S.pop()
+	# 			S.pop()
 
-	# 	S.append(partition[bestInd])
-	# 	picked[bestInd] = True
+	# 			if cost > bestCost:
+	# 				bestCost = cost
+	# 				bestInd = ind
 
-	# 	# now, fill up the rest of S with (l-1) random elements
-	# 	while True:
-	# 		randChoice = np.random.choice(n, l-1)
-
-	# 		if bestInd in randChoice:
-	# 			continue
-	# 		else:
-	# 			for c in randChoice:
-	# 				S.append(partition[c])
-	# 				picked[c] = True
-	# 			break
+	# 		S.append(partition[bestInd])
+	# 		picked[bestInd] = True
 
 	# 	return S, picked
+
+
+	# initialize with singleton that has largest contribution plus (l-1) random elements
+	def initS(partition):
+		S = []
+
+		picked = [False for i in range(n)]
+
+		bestCost = -1
+		bestInd = -1
+
+		for movInd in range(n):
+			mov = partition[movInd]
+
+			S.append(mov)
+
+			curCost = 0
+			for i in range(m):
+				curCost = curCost + computeCost(i, S)
+
+			if curCost > bestCost:
+				bestCost = curCost
+				bestInd = movInd
+
+			S.pop()
+
+		S.append(partition[bestInd])
+		picked[bestInd] = True
+
+		# now, fill up the rest of S with (l-1) random elements
+		while True:
+			randChoice = np.random.choice(n, l-1)
+
+			if bestInd in randChoice:
+				continue
+			else:
+				for c in randChoice:
+					S.append(partition[c])
+					picked[c] = True
+				break
+
+		return S, picked
 
 
 	# write a function that computes the value of f for each category

@@ -19,13 +19,15 @@ def gmWrapper(n, m, l, k, simDist, movies):
 		numEvals = 0
 
 		totalCost = 0
-		S = []
+		S = []		
 
 		# greedily maximize each function ignoring the constraint on L
 		for catIndex in range(m):
 
 			greedyS = []
 			use = [False for i in range(n)]
+
+			print 'Category ', catIndex
 
 			for times in range(k):
 				# at each step, add the element that gives the greatest marginal gain 
@@ -43,13 +45,25 @@ def gmWrapper(n, m, l, k, simDist, movies):
 
 						greedyS.pop()
 
+					oldS = greedyS[:]
+					newS = greedyS[:]
+					newS.append(partition[bestInd])
+
+				print partition[bestInd], " ", computeCost(catIndex, newS) - computeCost(catIndex, oldS)
+
+
 				greedyS.append(partition[bestInd])
 				use[bestInd] = True
+
+			print "Total cost = ", computeCost(catIndex, greedyS), "\n"
 
 			totalCost = totalCost + computeCost(catIndex, greedyS)
 			S.extend(greedyS)
 
 		S = list(set(S))
+
+
+
 
 		print 'Greedy Merge gives cost = ', totalCost
 		print 'Size of S is ', len(S)
@@ -57,7 +71,7 @@ def gmWrapper(n, m, l, k, simDist, movies):
 		return S, totalCost, numEvals
 
 	# write a function that computes the value of f for each category
-	# this is Facilitypartitiontion from - Learning mixtures of submodular functions for image collection summarization.
+	# this is Facility Location from - Learning mixtures of submodular functions for image collection summarization.
 	def computeCost(catIndex, S):
 		tot = 0
 

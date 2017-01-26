@@ -114,32 +114,71 @@ def localsearch(n, m, l, k, csim, articles, epsilon = 0.2):
 		return computeCost(cat, greedyS)
 
 	# initialize by picking l elements, such that each new element maximizes the marginal gain
+	# def initS():
+	# 	S = []
+
+	# 	picked = [False for i in range(n)]
+
+	# 	for times in range(l):
+
+	# 		bestCost = -1
+	# 		bestInd = -1
+
+	# 		for ind in range(n):
+	# 			cost = 0
+
+	# 			S.append(ind)
+
+	# 			for cat in range(m):
+	# 				cost = cost + greedy(cat, S)
+
+	# 			S.pop()
+
+	# 			if cost > bestCost:
+	# 				bestCost = cost
+	# 				bestInd = ind
+
+	# 		S.append(bestInd)
+	# 		picked[bestInd] = True
+
+	# 	return S, picked
+
+	# initialize with singleton that has largest contribution plus (l-1) random elements
 	def initS():
 		S = []
 
 		picked = [False for i in range(n)]
 
-		for times in range(l):
+		bestCost = -1
+		bestInd = -1
 
-			bestCost = -1
-			bestInd = -1
+		for ind in range(n):
+			S.append(ind)
 
-			for ind in range(n):
-				cost = 0
+			curCost = 0
+			for i in range(m):
+				curCost = curCost + computeCost(i, S)
 
-				S.append(ind)
+			if curCost > bestCost:
+				bestCost = curCost
+				bestInd = ind
 
-				for cat in range(m):
-					cost = cost + greedy(cat, S)
+			S.pop()
 
-				S.pop()
+		S.append(bestInd)
+		picked[bestInd] = True
 
-				if cost > bestCost:
-					bestCost = cost
-					bestInd = ind
+		# now, fill up the rest of S with (l-1) random elements
+		while True:
+			randChoice = np.random.choice(n, l-1)
 
-			S.append(bestInd)
-			picked[bestInd] = True
+			if bestInd in randChoice:
+				continue
+			else:
+				for c in randChoice:
+					S.append(c)
+					picked[c] = True
+				break
 
 		return S, picked
 
