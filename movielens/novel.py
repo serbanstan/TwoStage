@@ -1,7 +1,7 @@
 """
 	A wrapper for Amin's algorithm in order to be able to use mapPartitions
 
-	n - number of movies
+    n - number of movies
 	m - number of categories
 	l - size of S
 	k - size of S_i
