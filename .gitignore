@@ -1,5 +1,5 @@
 .DS_Store
-*/.ipynb_checkpoints/
+*/*/.ipynb_checkpoints/
 code/imageproc/.ipynb_checkpoints/
 code/movielens/.ipynb_checkpoints/
 code/movielens/ratings.csv
