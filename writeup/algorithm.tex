@@ -1,0 +1,39 @@
+\section{Algorithm}
+\label{sec::algorithm}
+
+Below we provide our solution to the two stage problem. Our algorithm works in an incremental manner, it starts out with an empty set $S$, and then fills it up with $k$ elements in a greedy fashion. Then, we do $l-k$ more iterations to pick the rest of the elements, and we update the sets $T_i$ along the process. Our approach should perform $O(l n m k)$ function evaluations.
+\\
+% \begin{algorithm}[H]
+% 	\KwData{Input $l,k$}
+ 
+%  	$S = \varnothing$ \\
+%  	$T_i = \varnothing$ with $i$ from $1$ to $m$ \\
+
+%  	\For {$i$ from $1$ to $k$}{
+%  		$x = \arg\max_{x} F(S \cup \{ x \}) - F(S)$ \\
+
+%  		\For {$j$ from $1$ to $m$}{
+%  			$T_j = T_j \cup \{x\}$
+%  		}
+
+%  		$S = S \cup \{ x \}$
+%  	}
+%  	$\quad$\\
+%  	After running the above block, all sets $T_i$ have maximum size $k$. \\
+%  	$\quad$\\
+% 	\For {$i$ from $k+1$ to $l$}{
+%  		$x = \arg\max_{x} F(S \cup \{ x \}) - F(S)$ \\
+
+%  		\For {$j$ from $1$ to $m$}{
+%  			$y = \arg\max_{y} f_j(T_j \cup \{x\} \setminus \{y\})$ \\
+%  			$T_j = T_j \cup \{x\} \setminus \{y\}$
+%  		}
+
+%  		$S = S \cup \{ x \}$
+% 	}
+
+% 	\KwResult{return $S, T_i$ }
+% \end{algorithm}
+TODO: rewrite this in the format from the email? \\
+\\
+TODO2: proof (?), theorems, appendix
