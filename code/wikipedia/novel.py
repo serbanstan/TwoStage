@@ -111,12 +111,12 @@ def novel(l, k, children, elements, dictParents):
 		curSum = 0
 		for i in range(m):
 			curSum = curSum + computeCost(i, bestS[i])
-		print 'We obtained value ', curSum
+		# print 'We obtained value ', curSum
 
 		# print S, curSum
-		print 'sanity check:'
-		for i in range(m):
-		 	print bestS[i], len(bestS[i]), set(bestS[i]).issubset(set(S)), computeCost(i, bestS[i])
+		# print 'sanity check:'
+		# for i in range(m):
+		#  	print bestS[i], len(bestS[i]), set(bestS[i]).issubset(set(S)), computeCost(i, bestS[i])
 
 		return S, bestS, curSum, numEvals
 

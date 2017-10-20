@@ -469,7 +469,7 @@ def localSearchSeeded(k,children,elements,dictParents,seedSolution,count,epsilon
         newSol = copy.deepcopy(seedSolution)
         newSol.remove(minContribSol)
         newSol.append(maxContrib)
-        return localSearchSeeded(k,children,elements,dictParents,newSol,count+1)
+        return localSearchSeeded(k,children,elements,dictParents,newSol,count+1,epsilon)
     return (seedSolution, count)
 
 def localSearch(l,k,children,elements,dictParents,epsilon):

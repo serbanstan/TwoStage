@@ -4,7 +4,7 @@ Local Search
 
 import numpy as np
 
-def localsearch(l, k, featvec, nrm, nrmdist, catimg, epsilon):
+def localsearch(l, k, featvec, exempDist, dist, catimg, epsilon):
 
 	categories = catimg.keys()
 	imgList = featvec.keys()
@@ -16,8 +16,6 @@ def localsearch(l, k, featvec, nrm, nrmdist, catimg, epsilon):
 	def worker():
 		global numEvals
 		numEvals = 0
-
-		np.random.seed(3)
 
 		# work forthe first k entries
 		S, picked = initS()
@@ -120,92 +118,95 @@ def localsearch(l, k, featvec, nrm, nrmdist, catimg, epsilon):
 		return computeCost(cat, greedyS)
 
 	# initialize by picking l elements, such that each new element maximizes the marginal gain
-	# def initS():
-	# 	S = []
-
-	# 	picked = [False for i in range(n)]
-
-	# 	for times in range(l):
-
-	# 		bestCost = -1
-	# 		bestInd = -1
-
-	# 		for ind in range(n):
-	# 			cost = 0
-
-	# 			S.append(imgList[ind])
-
-	# 			for cat in categories:
-	# 				cost = cost + greedy(cat, S)
-
-	# 			S.pop()
-
-	# 			if cost > bestCost:
-	# 				bestCost = cost
-	# 				bestInd = ind
-
-	# 		S.append(imgList[bestInd])
-	# 		picked[bestInd] = True
-
-	# 	return S, picked
-
 	def initS():
 		S = []
 
 		picked = [False for i in range(n)]
 
-		bestCost = -1
-		bestInd = -1
+		for times in range(l):
 
-		for imgInd in range(n):
-			S.append(imgList[imgInd])
+			bestCost = -1
+			bestInd = -1
 
-			curCost = 0
-			for cat in categories:
-				curCost = curCost + computeCost(cat, S)
+			for ind in range(n):
+				cost = 0
 
-			if curCost > bestCost:
-				bestCost = curCost
-				bestInd = imgInd
+				S.append(imgList[ind])
 
-			S.pop()
+				for cat in categories:
+					cost = cost + greedy(cat, S)
 
-		S.append(imgList[bestInd])
-		picked[bestInd] = True
+				S.pop()
 
-		# now, fill up the rest of S with (l-1) random elements
-		while True:
-			randChoice = np.random.choice(n, l-1)
+				if cost > bestCost:
+					bestCost = cost
+					bestInd = ind
 
-			if bestInd in randChoice:
-				continue
-			else:
-				for c in randChoice:
-					S.append(imgList[c])
-					picked[c] = True
-				break
+			S.append(imgList[bestInd])
+			picked[bestInd] = True
 
 		return S, picked
 
+	# def initS():
+	# 	S = []
+
+	# 	picked = [False for i in range(n)]
+
+	# 	bestCost = -1
+	# 	bestInd = -1
+
+	# 	for imgInd in range(n):
+	# 		S.append(imgList[imgInd])
+
+	# 		curCost = 0
+	# 		for cat in categories:
+	# 			curCost = curCost + computeCost(cat, S)
+
+	# 		if curCost > bestCost:
+	# 			bestCost = curCost
+	# 			bestInd = imgInd
+
+	# 		S.pop()
+
+	# 	S.append(imgList[bestInd])
+	# 	picked[bestInd] = True
+
+	# 	# now, fill up the rest of S with (l-1) random elements
+	# 	while True:
+	# 		randChoice = np.random.choice(n, l-1)
+
+	# 		if bestInd in randChoice:
+	# 			continue
+	# 		else:
+	# 			for c in randChoice:
+	# 				S.append(imgList[c])
+	# 				picked[c] = True
+	# 			break
+
+	# 	return S, picked
 
 
-	# write a function that computes the value of f for each category
+	# this is exemplar based clustering from - https://las.inf.ethz.ch/files/mirzasoleiman13distributed.pdf
 	def computeCost(cat, S):
+		
 		global numEvals
 		numEvals = numEvals + 1
+
+		# we are interested in elements from S that are in category i
+		catS = list(set(S).intersection(catimg[cat]))
 		
 		# we initialize with e0 = 0
 		t1 = 0
 		for img in catimg[cat]:
-			t1 = t1 + nrm[img]
+			t1 = t1 + exempDist[img]
 
 		t2 = 0
 		for img in catimg[cat]:
 			# the value for e0
-			best = nrm[img]
+			best = exempDist[img]
 
-			for s in S:
-				best = min(best, nrmdist[(img, s)])
+			for s in catS:
+				best = min(best, dist[(img, s)])
 
 			t2 = t2 + best
 

@@ -4,7 +4,7 @@
 
 import numpy as np
 
-def greedymerge(l, k, featvec, nrm, nrmdist, catimg):
+def greedymerge(l, k, featvec, exempDist, dist, catimg):
 
 	categories = catimg.keys()
 	imgList = featvec.keys()
@@ -56,23 +56,27 @@ def greedymerge(l, k, featvec, nrm, nrmdist, catimg):
 		return S, totalCost, numEvals
 
 
-	# write a function that computes the value of f for each category
+	# this is exemplar based clustering from - https://las.inf.ethz.ch/files/mirzasoleiman13distributed.pdf
 	def computeCost(cat, S):
+
 		global numEvals
 		numEvals = numEvals + 1
+
+		# we are interested in elements from S that are in category i
+		catS = list(set(S).intersection(catimg[cat]))
 		
 		# we initialize with e0 = 0
 		t1 = 0
 		for img in catimg[cat]:
-			t1 = t1 + nrm[img]
+			t1 = t1 + exempDist[img]
 
 		t2 = 0
 		for img in catimg[cat]:
 			# the value for e0
-			best = nrm[img]
+			best = exempDist[img]
 
-			for s in S:
-				best = min(best, nrmdist[(img, s)])
+			for s in catS:
+				best = min(best, dist[(img, s)])
 
 			t2 = t2 + best
 

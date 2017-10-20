@@ -2,7 +2,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-def greedyclustering(l, k, featvec, nrm, nrmdist, catimg):
+def greedyclustering(l, k, featvec, exempDist, dist, catimg):
 
 	categories = catimg.keys()
 	imgList = featvec.keys()
@@ -137,43 +137,30 @@ def greedyclustering(l, k, featvec, nrm, nrmdist, catimg):
 
 		return list(set(S))
 
+	# this is exemplar based clustering from - https://las.inf.ethz.ch/files/mirzasoleiman13distributed.pdf
 	def computeCost(cat, S):
+		
 		global numEvals
 		numEvals = numEvals + 1
+
+		# we are interested in elements from S that are in category i
+		catS = list(set(S).intersection(catimg[cat]))
 		
 		# we initialize with e0 = 0
 		t1 = 0
 		for img in catimg[cat]:
-			t1 = t1 + nrm[img]
+			t1 = t1 + exempDist[img]
 
 		t2 = 0
 		for img in catimg[cat]:
 			# the value for e0
-			best = nrm[img]
+			best = exempDist[img]
 
-			for s in S:
-				best = min(best, nrmdist[(img, s)])
+			for s in catS:
+				best = min(best, dist[(img, s)])
 
 			t2 = t2 + best
 
 		return (t1 - t2) / len(catimg[cat])
-
-	# write a function that computes the value of f for each category
-	# def computeCost(cat, S):
-	# 	tot = 0
-
-	# 	for img in catimg[cat]:
-	# 		best = 0
-
-	# 		for s in S:
-	# 			best = max(best, computeSim(featvec[img], featvec[s]))
-	# 			# best = max(best, 1 / (np.linalg.norm(featvec[img] - featvec[s]) + 1))
-
-	# 		tot = tot + best
-
-	# 	return tot
-
-	# def computeSim(a, b):
-	# 	return 1.0 / (np.linalg.norm(a - b) + 1)
 
 	return worker()
