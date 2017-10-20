@@ -1,10 +1,2 @@
 .DS_Store
-*/*/.ipynb_checkpoints/
-code/imageproc/.ipynb_checkpoints/
-code/movielens/.ipynb_checkpoints/
-code/movielens/ratings.csv
-code/movielens/novel.pyc
-code/imageproc/VOC2012/ImageSets
-code/imageproc/VOC2012/JPEGImages
-code/imageproc/VOC2012/SegmentationClass
-code/imageproc/VOC2012/SegmentationObject
+**/.DS_Store
